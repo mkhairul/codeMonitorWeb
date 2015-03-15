@@ -44,7 +44,8 @@
         "twig/twig": ">=1.8.0,<2.0-dev",
         "doctrine/dbal": "~2.2",
         "swiftmailer/swiftmailer": "5.*",
-        "monolog/monolog": "~1.4,>=1.4.1"
+        "monolog/monolog": "~1.4,>=1.4.1",
+        "parse/php-sdk": "1.0.*"
     },
     "suggest": {
         "symfony/browser-kit": "~2.3",
