@@ -1,0 +1,14 @@
+body{
+  background-color: #F2F2F2;
+}
+
+div.boxes > div:nth-child(3){
+  background-color: #9c27b0;
+}
+
+div.boxes > div{ 
+  box-shadow: 0 1px 2px rgba(0,0,0,0.07);
+  padding: 5px; 
+  border-radius: 1px;
+  background-color: #fff;
+}

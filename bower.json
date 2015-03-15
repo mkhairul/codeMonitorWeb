@@ -1,0 +1,26 @@
+{
+  "name": "codeMonitorWeb",
+  "version": "0.1",
+  "authors": [
+    "mkhairul <mkhairul@gmail.com>"
+  ],
+  "description": "displays stuffs from codeMonitor",
+  "keywords": [
+    "monitor",
+    "folders/files"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "web/assets/src/js/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-material": "~0.8.3",
+    "angular": "~1.3.14"
+  }
+}
