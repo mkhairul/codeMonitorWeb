@@ -34,10 +34,9 @@
           <div class="md-toolbar-tools">
             <span class="md-flex">{[{session.name}]}</span>
           </div>
-          <small>x minutes ago</small>
+          <small am-time-ago="{[{session.updatedAt}]}"></small>
         </md-toolbar>
         <md-content class="md-padding" style="height: 100px;padding: 24px;">
-          
         </md-content>
       </div>
     </div>
@@ -51,6 +50,9 @@
   <script src="{{app.request.basepath}}/assets/src/js/angular-material/angular-material.min.js"></script>
   <script src="{{app.request.basepath}}/assets/src/js/ngFx/dist/ngFxBundle.min.js"></script>
   <script src="{{app.request.basepath}}/assets/src/js/jquery/dist/jquery.min.js"></script>
+  <script src="{{app.request.basepath}}/assets/src/js/moment/min/moment.min.js"></script>
+  <script src="{{app.request.basepath}}/assets/src/js/angular-moment/angular-moment.min.js"></script>
+  <script src="{{app.request.basepath}}/assets/src/js/moment-timezone/builds/moment-timezone.min.js"></script>
   <script src="{{app.request.basepath}}/assets/src/js/app.js"></script>
 </body>
 </html>

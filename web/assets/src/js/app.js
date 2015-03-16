@@ -1,4 +1,4 @@
-var app = angular.module('codeMon', ['ngMaterial', 'ngFx'])
+var app = angular.module('codeMon', ['ngMaterial', 'ngFx', 'angularMoment'])
             .config(function($interpolateProvider){
                 $interpolateProvider.startSymbol('{[{').endSymbol('}]}');
             });
@@ -6,9 +6,11 @@ var app = angular.module('codeMon', ['ngMaterial', 'ngFx'])
 
 app.controller('codeMonDash', ['$scope', '$mdDialog', '$http', '$timeout', function($scope, $mdDialog, $http, $timeout){
     'use strict';
-  
     var populateItems = function(data){
       return function(){
+        console.log(data.updatedAt);
+        console.log(data.updatedAt.date+data.updatedAt.timezone);
+        data.updatedAt = moment(data.updatedAt.date+data.updatedAt.timezone)
         $scope.sessions.push(data);
       };
     }

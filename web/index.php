@@ -34,7 +34,8 @@ $app->get('/sessions', function(Silex\Application $app) use ($config){
     {
       $object = $results[$i];
       $monSessionObj[] = [
-        'name' => $object->get('name')
+        'name' => $object->get('name'),
+        'updatedAt' => $object->getUpdatedAt()
       ];
     }
     $json_response['results'] = $monSessionObj;
