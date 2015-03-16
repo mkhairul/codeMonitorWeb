@@ -2,10 +2,11 @@
 <html lang="en" ng-app="codeMon">
 <head>
   <meta charset="utf-8">
-  <title>My HTML File</title>
+  <title>CodeMonWeb</title>
   <!--<link rel="stylesheet" href="css/app.css">-->
   
   <link rel="stylesheet" href="{{app.request.basepath}}/assets/src/js/angular-material/angular-material.min.css">
+  <link rel="stylesheet" href="{{app.request.basepath}}/assets/src/js/csshake/csshake.min.css">
   <link rel="stylesheet" href="{{app.request.basepath}}/assets/src/css/style.css">
 </head>
 <body>
@@ -14,18 +15,32 @@
     
     <md-toolbar>
       <h2 class="md-toolbar-tools">
-        <span>Toolbar</span>
+        <div layout="row" layout-sm="column" layout-align="center center">
+          <span>CodeMonitor</span>
+          <md-progress-circular ng-show="sessions.length == 0 || loading == 1" class="md-warn md-hue-3" md-diameter="24" md-mode="indeterminate"></md-progress-circular>
+        </div>
       </h2>
     </md-toolbar>
     
-    <div class="boxes" layout="row" layout-margin>
-      <div ng-repeat="session in sessions track by $index" flex flex-order="{[{($index%3)+1}]}">
-        [flex-no="{[{$index}]}"]
+    <div ng-show="sessions.length <= 0" layout="row" layout-margin layout-align="center center">
+      <div>
+        Loading Content
       </div>
     </div>
-
-    <p>Nothing here</p>
-    <md-button class="md-primary" ng-click="showAlert($event)">Alert Dialog?</md-button>
+    
+    <div class="boxes" layout="row" layout-margin layout-wrap>
+      <div class="fx-fade-right fx-trigger shake shake-little" ng-repeat="session in sessions track by $index"  flex="20">
+        <md-toolbar class="md-warn">
+          <div class="md-toolbar-tools">
+            <span class="md-flex">{[{session.name}]}</span>
+          </div>
+          <small>x minutes ago</small>
+        </md-toolbar>
+        <md-content class="md-padding" style="height: 100px;padding: 24px;">
+          
+        </md-content>
+      </div>
+    </div>
   
   </div>
   
@@ -34,6 +49,8 @@
   <script src="{{app.request.basepath}}/assets/src/js/angular-animate/angular-animate.min.js"></script>
   <script src="{{app.request.basepath}}/assets/src/js/angular-aria/angular-aria.min.js"></script>
   <script src="{{app.request.basepath}}/assets/src/js/angular-material/angular-material.min.js"></script>
+  <script src="{{app.request.basepath}}/assets/src/js/ngFx/dist/ngFxBundle.min.js"></script>
+  <script src="{{app.request.basepath}}/assets/src/js/jquery/dist/jquery.min.js"></script>
   <script src="{{app.request.basepath}}/assets/src/js/app.js"></script>
 </body>
 </html>

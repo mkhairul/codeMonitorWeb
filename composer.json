@@ -54,7 +54,10 @@
         "symfony/form": "~2.3"
     },
     "autoload": {
-        "psr-0": { "Silex": "src/" }
+        "psr-0": { 
+          "Silex": "src/",
+          "CodeMon": "web/app/"
+        }
     },
     "extra": {
         "branch-alias": {

@@ -1,11 +1,31 @@
-var app = angular.module('codeMon', ['ngMaterial'])
+var app = angular.module('codeMon', ['ngMaterial', 'ngFx'])
             .config(function($interpolateProvider){
                 $interpolateProvider.startSymbol('{[{').endSymbol('}]}');
             });
 
 
-app.controller('codeMonDash', ['$scope', '$mdDialog', function($scope, $mdDialog){
+app.controller('codeMonDash', ['$scope', '$mdDialog', '$http', '$timeout', function($scope, $mdDialog, $http, $timeout){
     'use strict';
+  
+    var populateItems = function(data){
+      return function(){
+        $scope.sessions.push(data);
+      };
+    }
+    
+    $scope.loading = 0;
+    $scope.sessions = []
+    $http.get('sessions').
+      success(function(data, status, headers, config){
+        var end = data.results.length;
+        for(var i = 0; i < end; i++)
+        {
+          $timeout(populateItems(data.results[i]), i * 300);
+        }
+      }).
+      error(function(data, status, headers, config){
+      })
+    
     $scope.showAlert = function(ev) {
       console.log('clicked');
       $mdDialog.show(
@@ -18,8 +38,8 @@ app.controller('codeMonDash', ['$scope', '$mdDialog', function($scope, $mdDialog
       );
     };
   
-    $scope.sessions = []
-  
+    
+    /*
     for(var i = 0; i < 15; i++)
     {
       $scope.sessions.push({
@@ -27,6 +47,7 @@ app.controller('codeMonDash', ['$scope', '$mdDialog', function($scope, $mdDialog
       });
     }
     console.log($scope.sessions);
+    */
   
     
 }]);
