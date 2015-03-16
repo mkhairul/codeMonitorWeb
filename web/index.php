@@ -13,15 +13,59 @@ $config = require_once(__DIR__.'/../config/config.php');
 $app = new Silex\Application();
 $app['debug'] = true;
 
+$initParse = function() use ($config){
+  ParseClient::initialize($config['parse']['app_id'], 
+                          $config['parse']['rest_key'], 
+                          $config['parse']['master_key']);
+};
+
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/templates',
 ));
 
-$app->get('/sessions', function(Silex\Application $app) use ($config){
+$app->get('/changes/{id}', function(Silex\Application $app) use ($initParse){
+  $initParse();
   
-  ParseClient::initialize($config['parse']['app_id'], 
-                          $config['parse']['rest_key'], 
-                          $config['parse']['master_key']);
+  $json_response = array('status' => 0);
+  
+  $monObj = new ParseObject('MonSession', $app['request']->get('id'));
+  
+  $query = new ParseQuery('FileChanges');
+  $query->equalTo('parent', $monObj);
+  $query->descending('updatedAt');
+  $results = $query->find();
+  
+  if(count($results) === 0)
+  {
+    return $app->json($json_response);
+  }
+  
+  
+  $fileChangesObj = [];
+  if(count($results) > 0)
+  {
+    for($i = 0; $i < count($results); $i++)
+    {
+      $object = $results[$i];
+      $fileinfo = pathinfo($object->get('filename'));
+      $fileChangesObj[] = [
+        'content'   => $object->get('content'),
+        'event'     => $object->get('event'),
+        'file'      => $fileinfo['filename'],
+        'dir'       => $fileinfo['dirname'],
+        'updatedAt' => $object->getUpdatedAt()
+      ];
+    }
+    $json_response['status'] = 1;
+    $json_response['results'] = $fileChangesObj;
+  }
+  
+  return $app->json($json_response);
+});
+
+$app->get('/sessions', function(Silex\Application $app) use ($initParse){
+  
+  $initParse();
   
   $query = new ParseQuery('MonSession');
   $results = $query->find();
@@ -34,10 +78,12 @@ $app->get('/sessions', function(Silex\Application $app) use ($config){
     {
       $object = $results[$i];
       $monSessionObj[] = [
-        'name' => $object->get('name'),
+        'id'        => $object->getObjectId(),
+        'name'      => $object->get('name'),
         'updatedAt' => $object->getUpdatedAt()
       ];
     }
+    $json_response['status'] = 1;
     $json_response['results'] = $monSessionObj;
   }
   return $app->json($json_response);

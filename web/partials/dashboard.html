@@ -1,0 +1,42 @@
+<md-toolbar>
+  <h2 class="md-toolbar-tools">
+    <div layout="row" layout-sm="column" layout-align="center center">
+      <span>CodeMonitor</span>
+      <md-progress-circular ng-show="sessions.length == 0 || loading == 1" class="md-warn md-hue-3" md-diameter="24" md-mode="indeterminate"></md-progress-circular>
+    </div>
+  </h2>
+</md-toolbar>
+
+<div ng-show="sessions.length <= 0" layout="row" layout-margin layout-align="center center">
+  <div>
+    Loading Content
+  </div>
+</div>
+<div class="boxes" layout="row" layout-margin layout-wrap>
+  <div ng-click="selectItem($index, session)" class="fx-fade-right fx-trigger shake shake-little" ng-repeat="session in sessions track by $index"  flex="20">
+    <md-toolbar class="md-warn">
+      <div class="md-toolbar-tools">
+        <span class="md-flex">{[{session.name}]}</span>
+      </div>
+      <div class="timeinfo" layout="column">
+        <span>
+          Created
+          <small am-time-ago="{[{session.updatedAt}]}"></small>
+        </span>
+        <span ng-if="session.changes.status == 1">
+          Updated 
+          <small am-time-ago="{[{momentjs(session.changes.data[0].updatedAt.date+session.changes.data[0].updatedAt.timezone)}]}"></small>
+        </span>
+      </div>
+    </md-toolbar>
+    <md-content class="md-padding" style="height: 100px;padding: 24px;">
+      <div layout="row" layout-sm="column" layout-align="center center">
+        <md-progress-circular ng-show="!session.changes" class="md-warn md-hue-3" md-diameter="24" md-mode="indeterminate"></md-progress-circular>
+        <div ng-hide="session.changes.status == 1">{[{!session.changes ? 'Loading Data':(session.changes.status == 1 ? '':'No changes in this session')}]}</div>
+        <div class="md-tile-content" ng-show="session.changes.status == 1">
+          Files: {[{session.changes.data.length}]}
+        </div>
+      </div>
+    </md-content>
+  </div>
+</div>

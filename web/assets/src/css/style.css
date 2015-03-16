@@ -25,13 +25,17 @@ div.boxes > div{
   
 }
 
-div.boxes > div .md-toolbar-tools + small{
-  padding: 0 16px;
-  margin-top: -25px;
-  font-size: 0.7em;
+div.boxes > div .md-toolbar-tools + .timeinfo{
+  padding: 0 16px 5px;
+  margin-top: -20px;
+  font-size: 0.6em;
   color: #E4E4E4;
 }
 
 div.boxes > div .md-toolbar-tools span{
   text-shadow: 1px 1px 1px #000;
+}
+.timeinfo span{
+  
+  margin-bottom: -2px
 }
