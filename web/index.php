@@ -1,5 +1,5 @@
 <?php
-
+//dfdffsd
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Parse\ParseClient;
@@ -26,7 +26,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 $app->get('/changes/{id}/{parent}', function(Silex\Application $app) use ($initParse){
   $initParse();
   
-  $json_response = array('status' => 0);
+  $json_response = array('status' => 0, 'results' => []);
   
   $monObj = new ParseObject('MonSession', $app['request']->get('id'));
   $with_parent = 0;
@@ -49,6 +49,17 @@ $app->get('/changes/{id}/{parent}', function(Silex\Application $app) use ($initP
   $fileChangesObj = [];
   if(count($results) > 0)
   {
+    if($with_parent)
+    {
+      $parent = $results[0]->get('parent');
+      $parent->fetch();
+      $parent = [
+        'id'        => $parent->getObjectId(),
+        'name'      => $parent->get('name'),
+        'updatedAt' => $parent->getUpdatedAt()
+      ];
+    }
+    
     for($i = 0; $i < count($results); $i++)
     {
       $object = $results[$i];
@@ -57,16 +68,11 @@ $app->get('/changes/{id}/{parent}', function(Silex\Application $app) use ($initP
       $data = [
         'content'   => $object->get('content'),
         'event'     => $object->get('event'),
-        'file'      => $fileinfo['filename'],
+        'file'      => $fileinfo['filename'].'.'.$fileinfo['extension'],
         'dir'       => $fileinfo['dirname'],
+        'parent'    => $parent,
         'updatedAt' => $object->getUpdatedAt()
       ];
-        
-      if($with_parent)
-      {
-        $parent = $object->get('parent');
-        $data['parent'] = $parent->fetch();
-      }
       
       $fileChangesObj[] = $data;
     }

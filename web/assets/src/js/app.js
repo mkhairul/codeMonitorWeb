@@ -35,22 +35,57 @@ app.config(['$interpolateProvider', '$stateProvider', '$urlRouterProvider', func
     })
 }]);
 
-app.controller('sessionCtrl', ['$rootScope', '$scope', '$state', '$stateParams', '$http', 'cfpLoadingBar', 'SessionService', 
-                               function($rootScope, $scope, $state, $stateParams, $http, cfpLoadingBar, SessionService){
+app.controller('RightNavCtrl', ['$scope', '$mdSidenav', function($scope, $mdSidenav){
+  $scope.close = function(){}
+}]);
+app.controller('LeftNavCtrl', ['$scope', '$mdSidenav', function($scope, $mdSidenav){
+  $scope.close = function(){}
+}]);
+
+app.controller('sessionCtrl', ['$rootScope', '$scope', '$state', '$stateParams', '$http', 
+                               'cfpLoadingBar', '$mdSidenav', '$mdMedia', 'moment',
+                               'SessionService', 
+                               function($rootScope, $scope, $state, $stateParams, $http, 
+                                        cfpLoadingBar, $mdSidenav, $mdMedia, moment,
+                                        SessionService){
+                                 
+  $scope.selectChange = function(index){
+    SessionService.selected().select(index);
+    $scope.$broadcast('refreshContent');
+  }
+  
+  $scope.$on('refreshContent', function(){
+    $scope.session = SessionService.selected();
+    $scope.content = SessionService.selected().getContent();
+    $scope.changes = SessionService.selected().getChanges();
+    $scope.currentChanges = SessionService.selected().currentChanges;
+    $scope.filename = SessionService.selected().getFilename();
+  });
+  
+  $scope.momentjs = moment;
   $rootScope.back = 'dashboard';
   if(SessionService.selected().getId() === false)
   {
     $http.get('changes/' + $stateParams.id)
         .success(function(data, status, headers, config){
-          $scope.filename = data.results[0].file;
-          $scope.content = data.results[0].content;
+          SessionService.selected({
+              id: data.results[0].parent.id,
+              changes: data.results
+            });
+          $scope.$broadcast('refreshContent');
         })
         .error(function(data, status, headers, config){});
   }
   else
   {
+    /*
     $scope.session = SessionService.selected();
-    $scope.content = $scope.session.getContent();
+    $scope.content = SessionService.selected().getContent();
+    $scope.changes = SessionService.selected().getChanges();
+    $scope.currentChanges = SessionService.selected().currentChanges;
+    $scope.filename = SessionService.selected().getFilename();
+    */
+    $scope.$broadcast('refreshContent');
   }
 }]);
 
@@ -98,24 +133,35 @@ app.controller('codeMonDashCtrl', ['$scope', '$mdDialog',
         
         $http.get('changes/' + item.id)
           .success(function(data, status, headers, config){
-            item.changes = {
-              status: data.status,
-              data: data.results
-            }
+            item.changes = data.results;
           })
           .error(function(data, status, headers, config){});
       };
     }
-    $http.get('sessions').
-      success(function(data, status, headers, config){
-        var end = data.results.length;
-        for(var i = 0; i < end; i++)
-        {
-          $timeout(populateItems(data.results[i]), i * 300);
-        }
-      }).
-      error(function(data, status, headers, config){
-      })
+    
+    $scope.$on('startPopulateItem', function(){
+      var session_list = SessionService.sessions();
+      var end = session_list.length;
+      for(var i = 0; i < end; i++)
+      {
+        $timeout(populateItems(session_list[i]), i * 300);
+      }
+    });
+    
+    if(SessionService.sessions().length)
+    {
+      $scope.$broadcast('startPopulateItem');
+    }
+    else
+    {
+      $http.get('sessions').
+        success(function(data, status, headers, config){
+          SessionService.sessions(data.results);
+            $scope.$broadcast('startPopulateItem');
+        }).
+        error(function(data, status, headers, config){
+        })
+    }
     
     $scope.showAlert = function(ev) {
       console.log('clicked');

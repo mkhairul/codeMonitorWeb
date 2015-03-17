@@ -76,3 +76,11 @@ md-content.code{
   top: 10px;
   left: 10px;
 }
+
+md-sidenav.filebar{
+  position: fixed;
+  right: 15px;
+  top: 50px;
+}
+
+.changes .selected{ font-weight: bold; }

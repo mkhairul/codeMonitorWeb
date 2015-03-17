@@ -9,24 +9,28 @@
           Created
           <small am-time-ago="{[{session.updatedAt}]}"></small>
         </span>
-        <span ng-if="session.changes.status == 1">
+        <span ng-if="session.changes.length > 0">
           Updated 
-          <small am-time-ago="{[{momentjs(session.changes.data[0].updatedAt.date+session.changes.data[0].updatedAt.timezone)}]}"></small>
+          <small am-time-ago="{[{momentjs(session.changes[0].updatedAt.date+session.changes[0].updatedAt.timezone)}]}"></small>
         </span>
       </div>
     </md-toolbar>
     <md-content class="md-padding" style="height: 100px;padding: 24px;">
       <div layout="row" layout-sm="column" layout-align="center center">
-        <md-progress-circular ng-show="!session.changes" class="md-warn md-hue-3" md-diameter="24" md-mode="indeterminate"></md-progress-circular>
-        <div ng-hide="session.changes.status == 1">{[{!session.changes ? 'Loading Data':(session.changes.status == 1 ? '':'No changes in this session')}]}</div>
-        <div class="md-tile-content" ng-show="session.changes.status == 1">
-          Files: {[{session.changes.data.length}]}
+        <md-progress-circular ng-if="!session.changes" class="md-warn md-hue-3" md-diameter="24" md-mode="indeterminate"></md-progress-circular>
+        <div ng-hide="session.changes.length > 0">
+          {[{!session.changes ? 
+                'Loading Data':
+                    (session.changes.length > 0 ? 
+                      '':'No changes in this session')}]}</div>
+        <div class="md-tile-content" ng-show="session.changes.length > 0">
+          Files: {[{session.changes.length}]}
         </div>
       </div>
     </md-content>
     <md-tooltip class="session-tip">
       {[{(!session.changes) ? 'Data still loading':
-         ((session.changes.data.length > 0) ? 'Click on it!':'Nothing to see')}]}
+         ((session.changes.length > 0) ? 'Click on it!':'Nothing to see')}]}
     </md-tooltip>
   </div>
 </div>
