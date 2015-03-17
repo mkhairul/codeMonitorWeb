@@ -25,7 +25,8 @@
       </div>
     </md-content>
     <md-tooltip class="session-tip">
-      Click on it!
+      {[{(!session.changes) ? 'Data still loading':
+         ((session.changes.data.length > 0) ? 'Click on it!':'Nothing to see')}]}
     </md-tooltip>
   </div>
 </div>
