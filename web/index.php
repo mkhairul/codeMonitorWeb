@@ -23,12 +23,17 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/templates',
 ));
 
-$app->get('/changes/{id}', function(Silex\Application $app) use ($initParse){
+$app->get('/changes/{id}/{parent}', function(Silex\Application $app) use ($initParse){
   $initParse();
   
   $json_response = array('status' => 0);
   
   $monObj = new ParseObject('MonSession', $app['request']->get('id'));
+  $with_parent = 0;
+  if($app['request']->get('id'))
+  {
+    $with_parent = 1;
+  }
   
   $query = new ParseQuery('FileChanges');
   $query->equalTo('parent', $monObj);
@@ -48,20 +53,29 @@ $app->get('/changes/{id}', function(Silex\Application $app) use ($initParse){
     {
       $object = $results[$i];
       $fileinfo = pathinfo($object->get('filename'));
-      $fileChangesObj[] = [
+      
+      $data = [
         'content'   => $object->get('content'),
         'event'     => $object->get('event'),
         'file'      => $fileinfo['filename'],
         'dir'       => $fileinfo['dirname'],
         'updatedAt' => $object->getUpdatedAt()
       ];
+        
+      if($with_parent)
+      {
+        $parent = $object->get('parent');
+        $data['parent'] = $parent->fetch();
+      }
+      
+      $fileChangesObj[] = $data;
     }
     $json_response['status'] = 1;
     $json_response['results'] = $fileChangesObj;
   }
   
   return $app->json($json_response);
-});
+})->value('parent', FALSE);
 
 $app->get('/sessions', function(Silex\Application $app) use ($initParse){
   

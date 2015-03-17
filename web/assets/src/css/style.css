@@ -1,5 +1,8 @@
 body{
   background-color: #F2F2F2;
+  min-height: 600px;
+  height: auto;
+  padding-bottom: 5px;
 }
 
 div.boxes > div:nth-child(3){
@@ -38,4 +41,38 @@ div.boxes > div .md-toolbar-tools span{
 .timeinfo span{
   
   margin-bottom: -2px
+}
+
+.code pre{
+  margin: 0;
+}
+
+.code code{
+  padding: 10px 15px; 
+}
+md-content.code{
+  background-color: transparent;
+}
+
+#loading-bar .bar{
+  background-color: #FF5722;
+}
+
+#loading-bar-spinner .spinner-icon {
+  border-top-color:  #FF5722;
+  border-left-color: #FF5722;
+}
+
+.toolbar-title{
+  text-shadow: -1px 1px 3px 1px lightgrey;
+}
+
+.toolbar{
+  position: relative;
+}
+
+.toolbar .back-button{
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }

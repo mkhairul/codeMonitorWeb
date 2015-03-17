@@ -1,17 +1,3 @@
-<md-toolbar>
-  <h2 class="md-toolbar-tools">
-    <div layout="row" layout-sm="column" layout-align="center center">
-      <span>CodeMonitor</span>
-      <md-progress-circular ng-show="sessions.length == 0 || loading == 1" class="md-warn md-hue-3" md-diameter="24" md-mode="indeterminate"></md-progress-circular>
-    </div>
-  </h2>
-</md-toolbar>
-
-<div ng-show="sessions.length <= 0" layout="row" layout-margin layout-align="center center">
-  <div>
-    Loading Content
-  </div>
-</div>
 <div class="boxes" layout="row" layout-margin layout-wrap>
   <div ng-click="selectItem($index, session)" class="fx-fade-right fx-trigger shake shake-little" ng-repeat="session in sessions track by $index"  flex="20">
     <md-toolbar class="md-warn">
@@ -38,5 +24,8 @@
         </div>
       </div>
     </md-content>
+    <md-tooltip class="session-tip">
+      Click on it!
+    </md-tooltip>
   </div>
 </div>
