@@ -6,6 +6,7 @@ use Parse\ParseClient;
 use Parse\ParseObject;
 use Parse\ParseException;
 use Parse\ParseQuery;
+use SebastianBergmann\Diff\Differ;
 
 $config = require_once(__DIR__.'/../config/config.php');
 
@@ -60,12 +61,43 @@ $app->get('/changes/{id}/{parent}', function(Silex\Application $app) use ($initP
       ];
     }
     
+    $prevChanges = '';
+    $prevFile = '';
+    $differ = new Differ;
+    $diffChanges = '';
+    $granularity = new cogpowered\FineDiff\Granularity\Character;
+    $diff = new cogpowered\FineDiff\Diff($granularity);
+    
     for($i = 0; $i < count($results); $i++)
     {
       $object = $results[$i];
       $fileinfo = pathinfo($object->get('filename'));
+      $filename = $fileinfo['filename'].'.'.$fileinfo['extension'];
+      
+      if($prevChanges)
+      {
+        if($filename != $prevFile)
+        {
+          $diffChanges  = '';
+          $prevChanges  = $object->get('content');
+          $prevFile     = $filename;
+        }
+        else
+        {
+		  //$diffChanges = $diff->render($prevChanges, $object->get('content'));
+          $diffChanges = $prevChanges;
+          $prevChanges = $object->get('content');
+          $prevFile     = $filename;
+        }
+      }
+      else
+      {
+        $prevChanges  = $object->get('content');
+        $prevFile     = $filename;
+      }
       
       $data = [
+        'diff'      => $diffChanges,
         'content'   => $object->get('content'),
         'event'     => $object->get('event'),
         'file'      => $fileinfo['filename'].'.'.$fileinfo['extension'],

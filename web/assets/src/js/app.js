@@ -1,5 +1,6 @@
 var app = angular.module('codeMon', ['ngMaterial', 'ngFx', 'angularMoment', 
-                                     'angular-loading-bar', 'ui.router', 'hljs', 'cfp.loadingBar'])
+                                     'angular-loading-bar', 'ui.router', 'hljs', 
+                                     'cfp.loadingBar', 'diff-match-patch'])
 app.run(['$rootScope', 'cfpLoadingBar', function($rootScope, cfpLoadingBar){
   $rootScope.$on('cfpLoadingBar:loading', function(){
     $rootScope.dataLoading = 1;
@@ -48,18 +49,28 @@ app.controller('sessionCtrl', ['$rootScope', '$scope', '$state', '$stateParams',
                                function($rootScope, $scope, $state, $stateParams, $http, 
                                         cfpLoadingBar, $mdSidenav, $mdMedia, moment,
                                         SessionService){
+  
+  $scope.selectedFile = '';
                                  
   $scope.selectChange = function(index){
     SessionService.selected().select(index);
     $scope.$broadcast('refreshContent');
   }
   
+  $scope.changeFile = function(index){ 
+    SessionService.selected().selectFile(index);
+    $scope.$broadcast('refreshContent');
+  }
+  
   $scope.$on('refreshContent', function(){
     $scope.session = SessionService.selected();
     $scope.content = SessionService.selected().getContent();
+    $scope.diff = SessionService.selected().getDiff();
     $scope.changes = SessionService.selected().getChanges();
     $scope.currentChanges = SessionService.selected().currentChanges;
     $scope.filename = SessionService.selected().getFilename();
+    $scope.files = SessionService.selected().getFiles();
+    $scope.changesInCurrentFile = SessionService.selected().getChangesInSelectedFile();
   });
   
   $scope.momentjs = moment;
@@ -78,24 +89,18 @@ app.controller('sessionCtrl', ['$rootScope', '$scope', '$state', '$stateParams',
   }
   else
   {
-    /*
-    $scope.session = SessionService.selected();
-    $scope.content = SessionService.selected().getContent();
-    $scope.changes = SessionService.selected().getChanges();
-    $scope.currentChanges = SessionService.selected().currentChanges;
-    $scope.filename = SessionService.selected().getFilename();
-    */
     $scope.$broadcast('refreshContent');
   }
 }]);
 
-app.controller('codeMonDashCtrl', ['$scope', '$mdDialog', 
+
+app.controller('codeMonDashCtrl', ['$rootScope', '$scope', '$mdDialog', '$mdToast',
                                    '$http', '$timeout', 
-                                   'moment', '$state',
+                                   'moment', '$state', '$animate',
                                    '$stateParams', 'SessionService', 
-                                   function($scope, $mdDialog, 
+                                   function($rootScope, $scope, $mdDialog, $mdToast,
                                             $http, $timeout, 
-                                             moment, $state,
+                                             moment, $state, $animate,
                                             $stateParams, SessionService){
     'use strict';
     $scope.loading = 0;
@@ -103,6 +108,13 @@ app.controller('codeMonDashCtrl', ['$scope', '$mdDialog',
     $scope.momentjs = moment
     
     $scope.selectItem = function($index, item){
+      
+      if($rootScope.dataLoading == 1)
+      {
+          $scope.showSimpleToast();
+          return false;
+      }
+      
       
       SessionService.selected(item);
       
@@ -162,17 +174,25 @@ app.controller('codeMonDashCtrl', ['$scope', '$mdDialog',
         error(function(data, status, headers, config){
         })
     }
-    
-    $scope.showAlert = function(ev) {
-      console.log('clicked');
-      $mdDialog.show(
-        $mdDialog.alert()
-          .title('This is an alert title')
-          .content('You can specify some description text in here.')
-          .ariaLabel('Password notification')
-          .ok('Got it!')
-          .targetEvent(ev)
-      );
-    };
+                                     
+  $scope.toastPosition = {
+    bottom: false,
+    top: true,
+    left: false,
+    right: true
+  };
+  $scope.getToastPosition = function() {
+    return Object.keys($scope.toastPosition)
+      .filter(function(pos) { return $scope.toastPosition[pos]; })
+      .join(' ');
+  };
+  $scope.showSimpleToast = function() {
+    $mdToast.show(
+      $mdToast.simple()
+        .content('Chill bro, not yet finish loading.')
+        .position($scope.getToastPosition())
+        .hideDelay(3000)
+    );
+  };
     
 }]);

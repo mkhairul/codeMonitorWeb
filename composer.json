@@ -45,7 +45,9 @@
         "doctrine/dbal": "~2.2",
         "swiftmailer/swiftmailer": "5.*",
         "monolog/monolog": "~1.4,>=1.4.1",
-        "parse/php-sdk": "1.0.*"
+        "parse/php-sdk": "1.0.*",
+        "sebastian/diff": "*",
+        "cogpowered/finediff": "0.3.*"
     },
     "suggest": {
         "symfony/browser-kit": "~2.3",
