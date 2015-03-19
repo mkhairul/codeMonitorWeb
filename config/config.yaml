@@ -1,0 +1,10 @@
+parse:
+  app_id: 
+  rest_key: 
+  master_key: 
+rabbit:
+  host: localhost
+  port: 5672
+  login: guest
+  pass: guest
+  vhost: /
