@@ -30,6 +30,7 @@ $app->match('/broadcast', function(Silex\Application $app) use ($config, $initPa
   
   $json_data = json_decode(file_get_contents('php://input'), true);
   $message = $json_data['data'];
+  $type = $json_data['type'];
   if(!$message)
   {
     return 'oi, send message lah';
@@ -41,7 +42,7 @@ $app->match('/broadcast', function(Silex\Application $app) use ($config, $initPa
   // Query it.
   $initParse();
   // Session or changes?
-  if($message['type'] === 'session')
+  if($type === 'session')
   {
     $query = new ParseQuery('MonSession');
     try {      
@@ -83,7 +84,7 @@ $app->match('/broadcast', function(Silex\Application $app) use ($config, $initPa
   $ch->exchange_declare($exchange, 'fanout', false, false, true);
   $ch->queue_bind($queue, $exchange);
 
-  $msg_body = json_encode(['type' => $message['type'], 'data' => $message]);
+  $msg_body = json_encode(['type' => $type, 'data' => $message]);
   
   $msg = new AMQPMessage($msg_body, array('content_type' => 'text/plain'));
   $ch->basic_publish($msg, $exchange);
