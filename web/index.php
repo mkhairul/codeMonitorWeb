@@ -26,10 +26,10 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/templates',
 ));
 
-$app->match('/broadcast', function(Silex\Application $app) use ($config){
+$app->match('/broadcast', function(Silex\Application $app) use ($config, $initParse){
   
   $message = $app['request']->get('message');
-  if($message)
+  if(!$message)
   {
     return 'oi, send message lah';
   }
