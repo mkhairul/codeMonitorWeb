@@ -47,8 +47,14 @@ $app->match('/broadcast', function(Silex\Application $app) use ($config, $initPa
     $query = new ParseQuery('MonSession');
     try {      
       $obj = $query->get($message['objectId']);
-      $from_parse = md5($obj->getObjectId() . $obj->get('machineID') . $obj->get('user') . $obj->getUpdatedAt());
-      $from_message = md5($message['objectId'] . $message['machineID'] . $message['user'] . $message['updatedAt']);
+      $from_parse = md5($obj->getObjectId() . 
+                        $obj->get('machineID') . 
+                        $obj->get('user') . 
+                        $obj->getUpdatedAt()->format('Y-m-d'));
+      $from_message = md5($message['objectId'] . 
+                          $message['machineID'] . 
+                          $message['user'] . 
+                          date('Y-m-d', strtotime($message['updatedAt'])));
     } catch (ParseException $ex) {
       exit;
     }
