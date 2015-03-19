@@ -1,6 +1,6 @@
 app.factory('SessionService', ['$compile', 'socketFactory', function($compile, socketFactory){
   
-  var myIoSocket = io.connect('http://localhost:3000');
+  var myIoSocket = io.connect('http://localhost:8000');
   mySocket = socketFactory({
     ioSocket: myIoSocket
   });

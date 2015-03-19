@@ -1,5 +1,5 @@
 var amqp = require('amqp');
-var io = require('socket.io').listen(3000);
+var io = require('socket.io').listen(8000);
 var pubsub = require('pubsub-js');
 var yaml = require('js-yaml');
 var fs = require('fs');
