@@ -45,9 +45,9 @@ $app->match('/broadcast', function(Silex\Application $app) use ($config, $initPa
   {
     $query = new ParseQuery('MonSession');
     try {      
-      $obj = $query->get($message['id']);
+      $obj = $query->get($message['objectId']);
       $from_parse = md5($obj->getObjectId() . $obj->get('machineID') . $obj->get('user') . $obj->getUpdatedAt());
-      $from_message = md5($message['id'] . $message['machineID'] . $message['user'] . $message['updatedAt']);
+      $from_message = md5($message['objectId'] . $message['machineID'] . $message['user'] . $message['updatedAt']);
     } catch (ParseException $ex) {
       exit;
     }
@@ -56,9 +56,9 @@ $app->match('/broadcast', function(Silex\Application $app) use ($config, $initPa
   {
     $query = new ParseQuery('FileChanges');
     try {      
-      $obj = $query->get($message['id']);
+      $obj = $query->get($message['objectId']);
       $from_parse = md5($obj->getObjectId() . $obj->get('content'));
-      $from_message = md5($message['id']  . $message['content']);
+      $from_message = md5($message['objectId']  . $message['content']);
     } catch (ParseException $ex) {
       exit;
     } 
