@@ -28,7 +28,8 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 
 $app->match('/broadcast', function(Silex\Application $app) use ($config, $initParse){
   
-  $message = $app['request']->get('message');
+  $json_data = json_decode(file_get_contents('php://input'));
+  $message = $json_data['data']['object'];
   if(!$message)
   {
     return 'oi, send message lah';
