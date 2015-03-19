@@ -1,11 +1,11 @@
-app.factory('SessionService', ['$compile', 'socketFactory', function($compile, socketFactory){
+app.factory('SessionService', ['$compile', 'socketFactory', '$window', 
+                               function($compile, socketFactory, $window){
   
-  var myIoSocket = io.connect('http://'.window.location.host.':8000');
+  var myIoSocket = io.connect('http://'+$window.location.host+':8000');
   mySocket = socketFactory({
     ioSocket: myIoSocket
   });
   
-  //mySocket.forward('someEvent');
   mySocket.on('changes', function(data){
     console.log('got changes');
     console.log(data);
@@ -15,7 +15,6 @@ app.factory('SessionService', ['$compile', 'socketFactory', function($compile, s
     console.log('got session');
     console.log(data);
   });
-  
   
   var selectedSession = {
     currentChanges: 0,
