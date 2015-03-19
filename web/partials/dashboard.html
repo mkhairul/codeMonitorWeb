@@ -1,5 +1,5 @@
 <div class="boxes" layout="row" layout-margin layout-wrap>
-  <div ng-click="selectItem($index, session)" class="fx-fade-right fx-trigger shake shake-little" ng-repeat="session in sessions track by $index"  flex="20">
+  <div ng-click="selectItem($index, session)" class="fx-fade-right fx-trigger shake shake-little" ng-repeat="session in sessions track by $index" flex="20">
     <md-toolbar class="md-warn">
       <div class="md-toolbar-tools">
         <span class="md-flex">{[{session.name | limitTo:20}]}</span>

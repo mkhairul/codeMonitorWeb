@@ -1,7 +1,8 @@
 <section layout="row" flex>
   <md-content class="code" flex>
     <div ng-if="!diff" hljs source="content" no-escape></div>
-    <pre class="hljs" ng-if="diff" class="textdiff" semantic-diff left-obj="content" right-obj="diff"></pre>
+    <pre class="hljs" ng-if="diff" class="textdiff" 
+         semantic-diff left-obj="diff" right-obj="content"></pre>
   </md-content>
   <md-sidenav ng-if="filename" class="session-sidenav md-sidenav-right md-whiteframe-z2" md-component-id="right"
               md-component-id="right" md-is-locked-open="$mdMedia('gt-md')">

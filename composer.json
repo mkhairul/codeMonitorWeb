@@ -47,7 +47,9 @@
         "monolog/monolog": "~1.4,>=1.4.1",
         "parse/php-sdk": "1.0.*",
         "sebastian/diff": "*",
-        "cogpowered/finediff": "0.3.*"
+        "cogpowered/finediff": "0.3.*",
+        "videlalvaro/php-amqplib": "2.2.*",
+        "symfony/yaml": "3.0.*@dev"
     },
     "suggest": {
         "symfony/browser-kit": "~2.3",

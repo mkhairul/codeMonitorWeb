@@ -7,9 +7,9 @@ return [
     ],
     'rabbit' => [
         'host'    => '',
-        'post'    => '',
+        'port'    => '',
         'login'   => '',
-        'password'=> '',
-        'vhost'   => '/'
+        'pass'=> '',
+        'vhost'   => ''
     ]
 ];

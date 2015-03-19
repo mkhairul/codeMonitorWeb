@@ -7,6 +7,8 @@ use Parse\ParseObject;
 use Parse\ParseException;
 use Parse\ParseQuery;
 use SebastianBergmann\Diff\Differ;
+use PhpAmqpLib\Connection\AMQPConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 $config = require_once(__DIR__.'/../config/config.php');
 
@@ -19,10 +21,33 @@ $initParse = function() use ($config){
                           $config['parse']['rest_key'], 
                           $config['parse']['master_key']);
 };
-
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/templates',
 ));
+
+$app->get('/rabbit', function(Silex\Application $app) use ($config){
+  $exchange = 'notification';
+  $queue = 'msgs';
+  
+  $conn = new AMQPConnection($config['rabbit']['host'],
+                             $config['rabbit']['port'],
+                             $config['rabbit']['login'],
+                             $config['rabbit']['pass'],
+                             $config['rabbit']['vhost']);
+  $ch = $conn->channel();
+  $ch->queue_declare($queue, false, false, false, true);
+  $ch->exchange_declare($exchange, 'fanout', false, false, true);
+  $ch->queue_bind($queue, $exchange);
+
+  $msg_body = json_encode(['type' => 'news', 'data' => 'woot!']);
+  
+  $msg = new AMQPMessage($msg_body, array('content_type' => 'text/plain'));
+  $ch->basic_publish($msg, $exchange);
+
+  $ch->close();
+  $conn->close();
+  return 'success';
+});
 
 $app->get('/changes/{id}/{parent}', function(Silex\Application $app) use ($initParse){
   $initParse();

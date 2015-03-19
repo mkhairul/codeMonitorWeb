@@ -1,4 +1,17 @@
-app.factory('SessionService', ['$compile', function($compile){
+app.factory('SessionService', ['$compile', 'socketFactory', function($compile, socketFactory){
+  
+  var myIoSocket = io.connect('http://localhost:3000');
+  mySocket = socketFactory({
+    ioSocket: myIoSocket
+  });
+  
+  //mySocket.forward('someEvent');
+  mySocket.on('news', function(data){
+    console.log('got news');
+    console.log(data);
+  });
+  
+  
   var selectedSession = {
     currentChanges: 0,
     currentFile: 0,
