@@ -9,8 +9,9 @@ use Parse\ParseQuery;
 use SebastianBergmann\Diff\Differ;
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use Symfony\Component\Yaml\Yaml;
 
-$config = require_once(__DIR__.'/../config/config.php');
+$config = Yaml::parse(file_get_contents(__DIR__.'/../config/config.yaml'));
 
 
 $app = new Silex\Application();
@@ -25,7 +26,49 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/templates',
 ));
 
-$app->get('/rabbit', function(Silex\Application $app) use ($config){
+$app->match('/broadcast', function(Silex\Application $app) use ($config){
+  
+  $message = $app['request']->get('message');
+  if($message)
+  {
+    return 'oi, send message lah';
+  }
+  
+  // Verify the message exists. Get the received data and hash it. 
+  // Query it on Parse (hash it) and compare it with received data
+  
+  // Query it.
+  $initParse();
+  // Session or changes?
+  if($message['type'] === 'session')
+  {
+    $query = new ParseQuery('MonSession');
+    try {      
+      $obj = $query->get($message['id']);
+      $from_parse = md5($obj->getObjectId() . $obj->get('machineID') . $obj->get('user') . $obj->getUpdatedAt());
+      $from_message = md5($message['id'] . $message['machineID'] . $message['user'] . $message['updatedAt']);
+    } catch (ParseException $ex) {
+      exit;
+    }
+  }
+  else
+  {
+    $query = new ParseQuery('FileChanges');
+    try {      
+      $obj = $query->get($message['id']);
+      $from_parse = md5($obj->getObjectId() . $obj->get('content'));
+      $from_message = md5($message['id']  . $message['content']);
+    } catch (ParseException $ex) {
+      exit;
+    } 
+  }
+  // Compare it
+  if($from_parse !== $from_message)
+  {
+    return 'oi, dont lah';
+  }
+  
+  
   $exchange = 'notification';
   $queue = 'msgs';
   
@@ -39,14 +82,14 @@ $app->get('/rabbit', function(Silex\Application $app) use ($config){
   $ch->exchange_declare($exchange, 'fanout', false, false, true);
   $ch->queue_bind($queue, $exchange);
 
-  $msg_body = json_encode(['type' => 'news', 'data' => 'woot!']);
+  $msg_body = json_encode(['type' => $message['type'], 'data' => $message]);
   
   $msg = new AMQPMessage($msg_body, array('content_type' => 'text/plain'));
   $ch->basic_publish($msg, $exchange);
 
   $ch->close();
   $conn->close();
-  return 'success';
+  return 'sent';
 });
 
 $app->get('/changes/{id}/{parent}', function(Silex\Application $app) use ($initParse){
@@ -157,6 +200,8 @@ $app->get('/sessions', function(Silex\Application $app) use ($initParse){
       $monSessionObj[] = [
         'id'        => $object->getObjectId(),
         'name'      => $object->get('name'),
+        'machineID' => $object->get('machineID'),
+        'user'      => $object->get('user'),
         'updatedAt' => $object->getUpdatedAt()
       ];
     }

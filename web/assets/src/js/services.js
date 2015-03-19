@@ -6,8 +6,13 @@ app.factory('SessionService', ['$compile', 'socketFactory', function($compile, s
   });
   
   //mySocket.forward('someEvent');
-  mySocket.on('news', function(data){
-    console.log('got news');
+  mySocket.on('changes', function(data){
+    console.log('got changes');
+    console.log(data);
+  });
+  
+  mySocket.on('session', function(data){
+    console.log('got session');
     console.log(data);
   });
   

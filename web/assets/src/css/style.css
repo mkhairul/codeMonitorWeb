@@ -65,7 +65,7 @@ md-content.code{
 }
 
 .toolbar-title{
-  text-shadow: -1px 1px 3px lightgrey;
+  text-shadow: -1px 1px 3px #000;
 }
 
 .toolbar{

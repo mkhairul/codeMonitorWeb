@@ -1,7 +1,20 @@
 var amqp = require('amqp');
-var connection = amqp.createConnection({ host: "", port: , login: '', password: 'guest', vhost: '' });
 var io = require('socket.io').listen(3000);
 var pubsub = require('pubsub-js');
+var yaml = require('js-yaml');
+var fs = require('fs');
+
+try{
+  var config = yaml.safeLoad(fs.readFileSync(__dirname+'/../config/config.yaml', 'utf8'));
+}catch(e){
+  console.log(e);
+}
+
+var connection = amqp.createConnection({ host: config.rabbit.host, 
+                                         port: config.rabbit.port, 
+                                         login: config.rabbit.login, 
+                                         password: config.rabbit.pass, 
+                                         vhost: config.rabbit.vhost });
 
 connection.on('ready', function () {
     connection.exchange("notification", options={type:'fanout'}, function(exchange) {
