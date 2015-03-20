@@ -1,5 +1,5 @@
-app.factory('SessionService', ['$compile', 'socketFactory', '$window', 
-                               function($compile, socketFactory, $window){
+app.factory('SessionService', ['$rootScope', '$compile', 'socketFactory', '$window', 
+                               function($rootScope, $compile, socketFactory, $window){
   
   var myIoSocket = io.connect('http://'+$window.location.host+':8000');
   mySocket = socketFactory({
@@ -12,13 +12,18 @@ app.factory('SessionService', ['$compile', 'socketFactory', '$window',
   });
   
   mySocket.on('session', function(data){
-    console.log('got session');
-    console.log(data);
+    $rootScope.$broadcast('newSession', data);
   });
+                                 
+  
   
   var selectedSession = {
     currentChanges: 0,
     currentFile: 0,
+    addChanges: function(changes)
+    {
+      this.changes.push(changes);
+    },
     select: function(index)
     {
       this.currentChanges = index;
@@ -68,7 +73,7 @@ app.factory('SessionService', ['$compile', 'socketFactory', '$window',
     }
   }
   
-  var sessionList = {};
+  var sessionList = [];
   
   // Sort all the changes under a filename
   function sortChangesToFiles(session)
@@ -130,6 +135,10 @@ app.factory('SessionService', ['$compile', 'socketFactory', '$window',
           sessionList = objs;
         }
         return sessionList;
+    },
+    addSession: function(objs)
+    {
+        sessionList.push(objs);
     }
   }
   

@@ -18,6 +18,18 @@ app.run(['$rootScope', 'cfpLoadingBar', function($rootScope, cfpLoadingBar){
       $rootScope.hideBack = 0;
     }
   });
+  
+  $rootScope.$on('refreshContent', function($scope){
+    $scope.session = SessionService.selected();
+    $scope.content = SessionService.selected().getContent();
+    $scope.diff = SessionService.selected().getDiff();
+    $scope.changes = SessionService.selected().getChanges();
+    $scope.currentChanges = SessionService.selected().currentChanges;
+    $scope.filename = SessionService.selected().getFilename();
+    $scope.files = SessionService.selected().getFiles();
+    $scope.changesInCurrentFile = SessionService.selected().getChangesInSelectedFile();
+  });
+  
 }]);
 
 app.config(['$interpolateProvider', '$stateProvider', '$urlRouterProvider', function($interpolateProvider, $stateProvider, $urlRouterProvider){
@@ -49,29 +61,24 @@ app.controller('sessionCtrl', ['$rootScope', '$scope', '$state', '$stateParams',
                                function($rootScope, $scope, $state, $stateParams, $http, 
                                         cfpLoadingBar, $mdSidenav, $mdMedia, moment,
                                         SessionService){
-  
+  $scope.$watch(function(){
+    return SessionService.selected();
+  }, function(){
+    $rootScope.$broadcast('refreshContent', $scope);
+  });
+                                 
+                                 
   $scope.selectedFile = '';
                                  
   $scope.selectChange = function(index){
     SessionService.selected().select(index);
-    $scope.$broadcast('refreshContent');
+    $rootScope.$broadcast('refreshContent', $scope);
   }
   
   $scope.changeFile = function(index){ 
     SessionService.selected().selectFile(index);
-    $scope.$broadcast('refreshContent');
+    $rootScope.$broadcast('refreshContent', $scope);
   }
-  
-  $scope.$on('refreshContent', function(){
-    $scope.session = SessionService.selected();
-    $scope.content = SessionService.selected().getContent();
-    $scope.diff = SessionService.selected().getDiff();
-    $scope.changes = SessionService.selected().getChanges();
-    $scope.currentChanges = SessionService.selected().currentChanges;
-    $scope.filename = SessionService.selected().getFilename();
-    $scope.files = SessionService.selected().getFiles();
-    $scope.changesInCurrentFile = SessionService.selected().getChangesInSelectedFile();
-  });
   
   $scope.momentjs = moment;
   $rootScope.back = 'dashboard';
@@ -83,14 +90,19 @@ app.controller('sessionCtrl', ['$rootScope', '$scope', '$state', '$stateParams',
               id: data.results[0].parent.id,
               changes: data.results
             });
-          $scope.$broadcast('refreshContent');
+          $rootScope.$broadcast('refreshContent', $scope);
         })
         .error(function(data, status, headers, config){});
   }
   else
   {
-    $scope.$broadcast('refreshContent');
+    $rootScope.$broadcast('refreshContent', $scope);
   }
+                                 
+  $rootScope.$on('changes', function(e, changes){
+    
+  }
+                                 
 }]);
 
 
@@ -107,6 +119,15 @@ app.controller('codeMonDashCtrl', ['$rootScope', '$scope', '$mdDialog', '$mdToas
     $scope.sessions = []
     $scope.momentjs = moment
     
+    $rootScope.$on('newSession', function(e, session){
+      SessionService.addSession(session);
+      $timeout(populateItems(session), 300);
+    });
+                                     
+    $rootScope.$on('changes', function(e, changes){
+      $scope.sessions.changes.push(changes);
+    });
+    
     $scope.selectItem = function($index, item){
       
       if($rootScope.dataLoading == 1)
@@ -114,7 +135,6 @@ app.controller('codeMonDashCtrl', ['$rootScope', '$scope', '$mdDialog', '$mdToas
           $scope.showSimpleToast();
           return false;
       }
-      
       
       SessionService.selected(item);
       
@@ -143,7 +163,7 @@ app.controller('codeMonDashCtrl', ['$rootScope', '$scope', '$mdDialog', '$mdToas
         item.updatedAt = moment(item.updatedAt.date+item.updatedAt.timezone)
         $scope.sessions.push(item);
         
-        $http.get('changes/' + item.id)
+        $http.get('changes/' + (item.id || item.objectId ))
           .success(function(data, status, headers, config){
             item.changes = data.results;
           })
@@ -168,8 +188,11 @@ app.controller('codeMonDashCtrl', ['$rootScope', '$scope', '$mdDialog', '$mdToas
     {
       $http.get('sessions').
         success(function(data, status, headers, config){
-          SessionService.sessions(data.results);
-            $scope.$broadcast('startPopulateItem');
+            if("results" in data)
+            {
+              SessionService.sessions(data.results);
+              $scope.$broadcast('startPopulateItem');
+            }
         }).
         error(function(data, status, headers, config){
         })

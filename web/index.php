@@ -50,11 +50,12 @@ $app->match('/broadcast', function(Silex\Application $app) use ($config, $initPa
       $from_parse = md5($obj->getObjectId() . 
                         $obj->get('machineID') . 
                         $obj->get('user') . 
-                        $obj->getUpdatedAt()->format('Y-m-d'));
+                        $obj->getUpdatedAt()->format('Y-m-d H:i:s'));
+      $tmp_date = new DateTime($message['updatedAt']);
       $from_message = md5($message['objectId'] . 
                           $message['machineID'] . 
                           $message['user'] . 
-                          date('Y-m-d', strtotime($message['updatedAt'])));
+                          $tmp_date->format('Y-m-d H:i:s'));
     } catch (ParseException $ex) {
       exit;
     }
