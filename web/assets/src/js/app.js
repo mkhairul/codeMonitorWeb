@@ -1,7 +1,7 @@
 var app = angular.module('codeMon', ['ngMaterial', 'ngFx', 'angularMoment', 
                                      'angular-loading-bar', 'ui.router', 'hljs', 
                                      'cfp.loadingBar', 'diff-match-patch','btford.socket-io'])
-app.run(['$rootScope', 'cfpLoadingBar', function($rootScope, cfpLoadingBar){
+app.run(['$rootScope', 'cfpLoadingBar', 'SessionService', function($rootScope, cfpLoadingBar, SessionService){
   $rootScope.$on('cfpLoadingBar:loading', function(){
     $rootScope.dataLoading = 1;
   });
