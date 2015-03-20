@@ -19,7 +19,7 @@ app.run(['$rootScope', 'cfpLoadingBar', 'SessionService', function($rootScope, c
     }
   });
   
-  $rootScope.$on('refreshContent', function($scope){
+  $rootScope.$on('refreshContent', function(e, $scope){
     $scope.session = SessionService.selected();
     $scope.content = SessionService.selected().getContent();
     $scope.diff = SessionService.selected().getDiff();
@@ -91,6 +91,7 @@ app.controller('sessionCtrl', ['$rootScope', '$scope', '$state', '$stateParams',
               changes: data.results
             });
           $rootScope.$broadcast('refreshContent', $scope);
+          console.log($scope.files);
         })
         .error(function(data, status, headers, config){});
   }
