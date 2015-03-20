@@ -101,7 +101,7 @@ app.controller('sessionCtrl', ['$rootScope', '$scope', '$state', '$stateParams',
                                  
   $rootScope.$on('changes', function(e, changes){
     
-  }
+  })
                                  
 }]);
 
