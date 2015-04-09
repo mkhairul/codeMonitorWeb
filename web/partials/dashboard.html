@@ -1,5 +1,24 @@
-<div class="boxes" layout="row" layout-margin layout-wrap>
-  <div ng-click="selectItem($index, session)" class="fx-fade-right fx-trigger shake shake-little" ng-repeat="session in sessions track by $index" flex="20">
+<div class="boxes" layout="row" layout-wrap>
+  <div class="download" flex="20">
+    <img src="assets/images/executable.png" />
+    <h1>Download codeMon 0.1</h1>
+    <md-list>
+      <md-list-item>
+        <i class="icon md-avatar fa fa-windows"></i>
+        <md-button href="codemon_setup.exe" class="md-raised md-primary">codemon_setup.exe</md-button>
+      </md-list-item>
+      <md-list-item>
+        <i class="icon md-avatar fa fa-archive"></i>
+        <md-button href="codemon.zip" class="md-raised md-primary">codemon.zip</md-button>
+      </md-list-item>
+      <md-list-item>
+        <i class="icon md-avatar fa fa-question"></i>
+        <a href="#"><strike>How to use</strike></a>
+      </md-list-item>
+    </md-list>
+  </div>
+  <div class="box-container fx-fade-right fx-trigger" ng-repeat="session in sessions track by $index" flex="20">
+  <div ng-click="selectItem($index, session)" class="shake shake-little box">
     <md-toolbar class="md-warn">
       <div class="md-toolbar-tools">
         <span class="md-flex">{[{session.name | limitTo:20}]}</span>
@@ -32,5 +51,6 @@
       {[{(!session.changes) ? 'Data still loading':
          ((session.changes.length > 0) ? 'Click on it!':'Nothing to see')}]}
     </md-tooltip>
+  </div>
   </div>
 </div>
